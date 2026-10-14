@@ -8,4 +8,5 @@
     <color name="connection_card_background">#000000</color>
     <color name="connection_card_stroke">#555555</color>
     <color name="key_list_entry_text">#999999</color>
+    <color name="floating_key_background">#99000000</color>
 </resources>

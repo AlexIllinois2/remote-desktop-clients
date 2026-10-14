@@ -79,6 +79,7 @@ import com.iiordanov.bVNC.dialogs.EnterTextDialog;
 import com.iiordanov.bVNC.dialogs.MetaKeyDialog;
 import com.iiordanov.bVNC.extrakeys.ExtraKeysView;
 import com.iiordanov.bVNC.extrakeys.ExtraKeysPagerAdapter;
+import com.iiordanov.bVNC.input.FloatingScrollKeys;
 import com.iiordanov.bVNC.input.IgnoringMouseInputListener;
 import com.iiordanov.bVNC.input.MetaKeyBean;
 import com.iiordanov.bVNC.input.Panner;
@@ -161,6 +162,7 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     float keyboardIconForAndroidTvX = Float.MAX_VALUE;
     IgnoringMouseInputListener ignoringMouseInputListener = new IgnoringMouseInputListener();
     OnTouchViewMover toolbarMover;
+    FloatingScrollKeys floatingScrollKeys;
     ActionBarPositionSaver toolbarPositionSaver = new ActionBarPositionSaver();
     int xPointerOffset = 0;
     int yPointerOffset = 0;
@@ -384,6 +386,7 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         Log.d(TAG, "continueConnecting");
         // Initialize extra keys view and pager.
         initializeExtraKeysView();
+        initializeFloatingScrollKeys();
 
         canvas.setFocusableInTouchMode(true);
         canvas.setDrawingCacheEnabled(false);
@@ -653,6 +656,16 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     @Override
     public int getyPointerOffset() {
         return yPointerOffset;
+    }
+
+    private void initializeFloatingScrollKeys() {
+        FrameLayout scrollKeys = findViewById(R.id.floatingScrollKeys);
+        if (scrollKeys == null)
+            return;
+        boolean enabled = Utils.querySharedPreferenceBoolean(this, Constants.showFloatingScrollKeysTag, true);
+        scrollKeys.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        if (enabled)
+            floatingScrollKeys = new FloatingScrollKeys(scrollKeys, remoteConnection, handler);
     }
 
     private void initializeExtraKeysView() {

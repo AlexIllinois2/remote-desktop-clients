@@ -144,4 +144,6 @@
 
     </LinearLayout>
 
+    <include layout="@layout/floating_scroll_keys" />
+
 </FrameLayout>

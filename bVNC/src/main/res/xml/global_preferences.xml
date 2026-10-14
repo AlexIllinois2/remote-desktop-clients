@@ -72,6 +72,11 @@
         android:key="pasteNonLatinViaClipboard"
         android:summary="@string/paste_non_latin_via_clipboard_summary"
         android:title="@string/paste_non_latin_via_clipboard" />
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="showFloatingScrollKeys"
+        android:summary="@string/show_floating_scroll_keys_summary"
+        android:title="@string/show_floating_scroll_keys" />
     <PreferenceCategory android:title="@string/applies_to_new_connections_only">
         <Preference
             android:key="openDefaultConnectionSettings"

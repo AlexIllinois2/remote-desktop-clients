@@ -175,6 +175,7 @@ public class Constants {
     public static final String touchpadSensitivity = "touchpadSensitivity";
     public static final String localToRemoteClipboardIntegration = "localToRemoteClipboardIntegration";
     public static final String pasteNonLatinViaClipboardTag = "pasteNonLatinViaClipboard";
+    public static final String showFloatingScrollKeysTag = "showFloatingScrollKeys";
     public static final String remoteToLocalClipboardIntegration = "remoteToLocalClipboardIntegration";
     public static final String EXTRA_KEYS_TOUR_SHOWN = "extraKeysTourShown";
     public static final int REMOTE_SOUND_DISABLED = 2;
