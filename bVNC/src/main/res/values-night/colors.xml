@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryTextColor">#CCCCCC</color>
+    <color name="connection_label_background">#3C3C3C</color>
+    <color name="connection_label_text">#E8E8E8</color>
+    <color name="connection_card_background">#1A1A1A</color>
+    <color name="connection_card_stroke">#3C3C3C</color>
+    <color name="key_list_entry_text">#AAAAAA</color>
+</resources>

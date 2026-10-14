@@ -141,6 +141,20 @@ public class RemoteCanvas extends AppCompatImageView implements Viewable {
     DrawableReallocatedListener drawableReallocatedListener;
 
     /**
+     * Receives text that an IME committed into the canvas, i.e. input the key event based
+     * path cannot deliver, such as CJK characters picked from a composition window.
+     */
+    public interface CommittedTextSender {
+        void sendText(String text);
+    }
+
+    private CommittedTextSender committedTextSender;
+
+    public void setCommittedTextSender(CommittedTextSender sender) {
+        committedTextSender = sender;
+    }
+
+    /**
      * Shows a non-fatal error message.
      */
     Runnable showDialogMessage = new Runnable() {
@@ -819,10 +833,24 @@ public class RemoteCanvas extends AppCompatImageView implements Viewable {
         }
     }
 
+    private class RemoteTextInputConnection extends BaseInputConnection {
+        RemoteTextInputConnection() {
+            super(RemoteCanvas.this, false);
+        }
+
+        @Override
+        public boolean commitText(CharSequence text, int newCursorPosition) {
+            if (committedTextSender != null && text != null && text.length() > 0) {
+                committedTextSender.sendText(text.toString());
+            }
+            return true;
+        }
+    }
+
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         Log.d(TAG, "onCreateInputConnection called");
-        BaseInputConnection bic = new BaseInputConnection(this, false);
+        BaseInputConnection bic = new RemoteTextInputConnection();
         outAttrs.actionLabel = null;
         outAttrs.inputType = getKeyboardVariation();
         String currentIme = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);

@@ -15,6 +15,21 @@
     <string name="pref_keyboard_type_VISIBLE_PASSWORD_value" translatable="false">145</string>
     <string name="pref_keyboard_type_TYPE_CLASS_TEXT_value" translatable="false">1</string>
 
+    <string-array name="night_mode_option_labels">
+        <item>@string/night_mode_follow_system</item>
+        <item>@string/night_mode_light</item>
+        <item>@string/night_mode_dark</item>
+    </string-array>
+
+    <string-array name="night_mode_option_values">
+        <item>@string/night_mode_follow_system_value</item>
+        <item>@string/night_mode_light_value</item>
+        <item>@string/night_mode_dark_value</item>
+    </string-array>
+    <string name="night_mode_follow_system_value" translatable="false">-1</string>
+    <string name="night_mode_light_value" translatable="false">1</string>
+    <string name="night_mode_dark_value" translatable="false">2</string>
+
     <string-array name="defaultInputMethodValues">
         <item>TOUCH_ZOOM_MODE</item>          <!-- Must match TouchInputHandlerDirectSwipePan.ID -->
         <item>TOUCH_ZOOM_MODE_DRAG_PAN</item> <!-- Must match TouchInputHandlerDirectDragPan.ID -->

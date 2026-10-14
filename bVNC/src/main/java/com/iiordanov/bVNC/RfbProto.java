@@ -1466,29 +1466,31 @@ public class RfbProto extends RfbConnectable implements RfbAuthChannel {
      * Sends clipboard text to the server.
      * Uses Extended Clipboard protocol (NOTIFY) if supported, otherwise standard format.
      *
-     * @param text   The clipboard text to send
-     * @param length The length of the text (legacy parameter, not used for Extended Clipboard)
+     * @param text The clipboard text to send
      * @throws IOException if an I/O error occurs
      */
-    synchronized void writeClientCutText(String text, int length) throws IOException {
+    synchronized void sendClipboardText(String text) throws IOException {
         if (viewOnly)
             return;
 
         if (extendedClipboardHandler != null && extendedClipboardHandler.isEnabled()) {
             extendedClipboardHandler.announceClipboardChange(text);
         } else {
-            writeClipboardContentsLegacyFallback(text, length);
+            writeClipboardContentsLegacyFallback(text);
         }
     }
 
-    private synchronized void writeClipboardContentsLegacyFallback(String text, int length) throws IOException {
+    private synchronized void writeClipboardContentsLegacyFallback(String text) throws IOException {
+        // The payload is UTF-8, so the length field must count bytes rather than UTF-16 units.
+        byte[] contents = text.getBytes(StandardCharsets.UTF_8);
+        int length = contents.length;
         byte[] b = new byte[8 + length];
         b[0] = (byte) ClientCutText;
-        b[4] = (byte) ((text.length() >> 24) & 0xff);
-        b[5] = (byte) ((text.length() >> 16) & 0xff);
-        b[6] = (byte) ((text.length() >> 8) & 0xff);
-        b[7] = (byte) (text.length() & 0xff);
-        System.arraycopy(text.getBytes(), 0, b, 8, length);
+        b[4] = (byte) ((length >> 24) & 0xff);
+        b[5] = (byte) ((length >> 16) & 0xff);
+        b[6] = (byte) ((length >> 8) & 0xff);
+        b[7] = (byte) (length & 0xff);
+        System.arraycopy(contents, 0, b, 8, length);
         os.writeBytes(b);
     }
 
@@ -1931,7 +1933,7 @@ public class RfbProto extends RfbConnectable implements RfbAuthChannel {
     @Override
     public void writeClientCutText(String text) {
         try {
-            writeClientCutText(text, text.length());
+            sendClipboardText(text);
         } catch (IOException e) {
             Log.e(TAG, "Could not write text to VNC server clipboard.");
             Log.e(TAG, Log.getStackTraceString(e));

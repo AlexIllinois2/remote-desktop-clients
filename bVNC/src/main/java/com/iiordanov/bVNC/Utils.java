@@ -58,6 +58,7 @@ import android.widget.Spinner;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.antlersoft.android.contentxml.SqliteElement;
 import com.antlersoft.android.contentxml.SqliteElement.ReplaceStrategy;
@@ -558,6 +559,18 @@ public class Utils {
             result = sp.getString(key, dftValue);
         }
         return result;
+    }
+
+    public static void applyNightMode(Context context) {
+        String value = querySharedPreferenceString(context, Constants.nightModeTag,
+                context.getString(R.string.night_mode_follow_system_value));
+        int mode;
+        try {
+            mode = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            mode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        }
+        AppCompatDelegate.setDefaultNightMode(mode);
     }
 
     public static int querySharedPreferencesInt(Context context, String key, int dftValue) {

@@ -155,6 +155,7 @@ public class Constants {
     public static final int keyLength = 256;
     public static final int saltLength = 256;
     public static final String generalSettingsTag = "generalSettings";
+    public static final String nightModeTag = "nightMode";
     public static final String masterPasswordEnabledTag = "masterPasswordEnabled";
     public static final String keepScreenOnTag = "keepScreenOn";
     public static final String disableImmersiveTag = "disableImmersive";
@@ -173,6 +174,7 @@ public class Constants {
     public static final String scrollSpeed = "scrollSpeed";
     public static final String touchpadSensitivity = "touchpadSensitivity";
     public static final String localToRemoteClipboardIntegration = "localToRemoteClipboardIntegration";
+    public static final String pasteNonLatinViaClipboardTag = "pasteNonLatinViaClipboard";
     public static final String remoteToLocalClipboardIntegration = "remoteToLocalClipboardIntegration";
     public static final String EXTRA_KEYS_TOUR_SHOWN = "extraKeysTourShown";
     public static final int REMOTE_SOUND_DISABLED = 2;

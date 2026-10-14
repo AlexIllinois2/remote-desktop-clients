@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#000000" />
+    <solid android:color="@color/connection_card_background" />
     <stroke
         android:width="6dp"
-        android:color="#555555" />
+        android:color="@color/connection_card_stroke" />
     <corners android:radius="6dp" />
     <padding
         android:bottom="2dp"

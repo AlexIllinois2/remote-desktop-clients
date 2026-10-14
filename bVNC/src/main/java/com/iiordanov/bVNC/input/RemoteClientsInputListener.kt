@@ -44,6 +44,7 @@ class RemoteClientsInputListener(
     private val touchInputHandler: TouchInputHandler?,
     val resetOnScreenKeys: (input: Int) -> Int,
     private val useDpadAsArrows: Boolean,
+    private val pasteNonLatinViaClipboard: Boolean,
 ) : View.OnKeyListener {
     private val tag: String = "RmtClientsInputListener"
     private val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
@@ -79,8 +80,18 @@ class RemoteClientsInputListener(
 
     private fun sendTextSync(s: String) {
         GeneralUtils.debugLog(App.debugLog, tag, "sendTextSync, s: $s")
-        for (i in s.indices) {
-            var event: KeyEvent?
+        var i = 0
+        while (i < s.length) {
+            val codePoint = s.codePointAt(i)
+            val width = Character.charCount(codePoint)
+            if (pasteNonLatinViaClipboard && codePoint > 0xFF) {
+                var end = i + width
+                while (end < s.length && s.codePointAt(end) > 0xFF)
+                    end += Character.charCount(s.codePointAt(end))
+                keyInputHandler?.sendTextViaClipboard(s.substring(i, end))
+                i = end
+                continue
+            }
             val c = s[i]
             if (Character.isISOControl(c)) {
                 if (c == '\n') {
@@ -92,12 +103,13 @@ class RemoteClientsInputListener(
                     keyInputHandler?.onKeyUpEvent(keyCode, KeyEvent(KeyEvent.ACTION_UP, keyCode))
                 }
             } else {
-                event = KeyEvent(
-                    SystemClock.uptimeMillis(), s.substring(i, i + 1), KeyCharacterMap.FULL, 0
+                val event = KeyEvent(
+                    SystemClock.uptimeMillis(), s.substring(i, i + width), KeyCharacterMap.FULL, 0
                 )
                 keyInputHandler?.onKeyDownEvent(event.keyCode, event)
                 throttleInputByWaiting()
             }
+            i += width
         }
     }
 

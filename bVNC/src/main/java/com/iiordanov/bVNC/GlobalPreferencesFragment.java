@@ -2,6 +2,7 @@ package com.iiordanov.bVNC;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -18,6 +19,18 @@ public class GlobalPreferencesFragment extends PreferenceFragmentCompat {
             addPreferencesFromResource(R.xml.global_preferences_rdp);
         } else if (Utils.isSpice(getContext())) {
             addPreferencesFromResource(R.xml.global_preferences_spice);
+        }
+
+        Preference nightMode = findPreference(Constants.nightModeTag);
+        if (nightMode != null) {
+            nightMode.setOnPreferenceChangeListener((preference, newValue) -> {
+                try {
+                    AppCompatDelegate.setDefaultNightMode(Integer.parseInt((String) newValue));
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                return true;
+            });
         }
     }
 

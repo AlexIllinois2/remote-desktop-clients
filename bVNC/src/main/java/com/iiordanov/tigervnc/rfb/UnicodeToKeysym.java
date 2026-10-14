@@ -822,6 +822,9 @@ public class UnicodeToKeysym {
         }
 
         /* no matching Unicode value found */
+        // X11 directly-encoded 24-bit UCS keysyms, e.g. 0x01004E2D for CJK characters.
+        if (unicode >= 0x100 && unicode <= 0x10ffff)
+            return unicode | 0x01000000;
         return -1;
     }
 }

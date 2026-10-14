@@ -35,6 +35,7 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        Utils.applyNightMode(this);
         Constants.DEFAULT_PROTOCOL_PORT = Utils.getDefaultPort(this);
         database = new Database(this);
         context = new WeakReference<Context>(this);

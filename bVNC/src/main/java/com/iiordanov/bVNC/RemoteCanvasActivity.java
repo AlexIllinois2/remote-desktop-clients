@@ -1212,9 +1212,11 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
                 remoteConnection,
                 touchInputHandler,
                 this::resetOnScreenKeys,
-                connection.getUseDpadAsArrows()
+                connection.getUseDpadAsArrows(),
+                Utils.querySharedPreferenceBoolean(this, Constants.pasteNonLatinViaClipboardTag, true)
         );
         canvas.setOnKeyListener(inputListener);
+        canvas.setCommittedTextSender(inputListener::sendText);
     }
 
     private void sendSpecialKeyAgain() {

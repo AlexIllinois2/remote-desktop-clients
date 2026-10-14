@@ -3,4 +3,9 @@
     <color name="black_overlay">#66000000</color>
     <color name="extra_keys_background">#AA000000</color>
     <color name="primaryTextColor">#AAAAAA</color>
+    <color name="connection_label_background">#555555</color>
+    <color name="connection_label_text">#FFFFFF</color>
+    <color name="connection_card_background">#000000</color>
+    <color name="connection_card_stroke">#555555</color>
+    <color name="key_list_entry_text">#999999</color>
 </resources>

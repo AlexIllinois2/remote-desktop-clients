@@ -92,7 +92,6 @@ import java.util.Map;
 public class ConnectionGridActivity extends AppCompatActivity implements GetTextFragment.OnFragmentDismissedListener {
     private static final String TAG = "ConnectionGridActivity";
     protected Database database;
-    protected boolean isStarting = true;
     FragmentManager fragmentManager = getSupportFragmentManager();
     GetTextFragment getPassword = null;
     GetTextFragment getNewPassword = null;
@@ -388,18 +387,14 @@ public class ConnectionGridActivity extends AppCompatActivity implements GetText
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume of version " + Utils.getVersionAndCode(this));
-        showMasterPasswordDialogOrConnections(true);
-        isStarting = false;
+        showMasterPasswordDialogOrConnections();
     }
 
-    private void showMasterPasswordDialogOrConnections(boolean showIntroText) {
+    private void showMasterPasswordDialogOrConnections() {
         if (showMasterPasswordDialog && Utils.querySharedPreferenceBoolean(this, Constants.masterPasswordEnabledTag)) {
             showGetTextFragment(getPassword);
         } else {
             loadSavedConnections();
-            if (showIntroText) {
-                IntroTextDialog.showIntroTextIfNecessary(this, database, Utils.isFree(this) && isStarting, false);
-            }
         }
     }
 
@@ -417,7 +412,7 @@ public class ConnectionGridActivity extends AppCompatActivity implements GetText
         Log.i(TAG, "onResumeFragments called");
         super.onResumeFragments();
         System.gc();
-        showMasterPasswordDialogOrConnections(false);
+        showMasterPasswordDialogOrConnections();
     }
 
     private void loadSavedConnections() {

@@ -452,6 +452,8 @@ bVNC对应的功能如下：
     <string name="portrait_mode">连接后切换到纵放模式</string>
     <string name="local_clipboard_integration">启用本地端→远程剪贴板整合</string>
     <string name="remote_clipboard_integration">启用远程→本地端剪贴板整合</string>
+    <string name="paste_non_latin_via_clipboard">远端打不出的字符改用粘贴</string>
+    <string name="paste_non_latin_via_clipboard_summary">把拉丁文以外的字符（例如中文）写入远端剪贴板并自动粘贴，会覆盖远端剪贴板内容。</string>
     <string name="position_toolbar_last_used">工具栏位置初始化</string>
     <string name="applies_to_new_connections_only">仅限适用到新建连接</string>
     <string name="pro_feature_mfa">看来您的服务器已启用多因素身份验证。请购买支持此功能的Pro版本。在开始对话框中有Pro版本的链接。</string>
@@ -806,6 +808,10 @@ aSPICE对应的功能如下：
     <string name="pref_keyboard_type_label_TYPE_NULL">默认(TYPE_NULL)</string>
     <string name="pref_keyboard_type_label_VISIBLE_PASSWORD">没有文字／数字的提示功能 (VISIBLE_PASSWORD)</string>
     <string name="pref_keyboard_type_label_TYPE_CLASS_TEXT">有字符提示功能 (TYPE_CLASS_TEXT)</string>
+    <string name="night_mode">主题</string>
+    <string name="night_mode_follow_system">跟随系统</string>
+    <string name="night_mode_light">浅色</string>
+    <string name="night_mode_dark">深色</string>
     <string name="no_application_to_handle_vpn">此连接设置为通过外部应用程序启动VPN。 您需要安装像Morpheusly这样的应用程序才能启动它。</string>
     <string name="vnc_viewer_started">VNC查看器已启动</string>
     <string name="enable_gateway">激活 RDP Gateway</string>

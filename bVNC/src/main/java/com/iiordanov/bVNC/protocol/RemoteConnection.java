@@ -381,6 +381,12 @@ abstract public class RemoteConnection implements PointerInputHandler, KeyInputH
         return keyboard.keyEvent(keyCode, e);
     }
 
+    @Override
+    public void sendTextViaClipboard(String text) {
+        if (keyboard != null)
+            keyboard.sendTextViaClipboard(text);
+    }
+
     abstract public boolean isColorModel(COLORMODEL cm);
 
     abstract public void setColorModel(COLORMODEL cm);

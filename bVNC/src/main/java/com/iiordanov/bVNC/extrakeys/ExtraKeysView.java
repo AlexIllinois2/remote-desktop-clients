@@ -186,10 +186,12 @@ public final class ExtraKeysView extends GridLayout {
         setRepetitiveKeys(ExtraKeysConstants.PRIMARY_REPETITIVE_KEYS);
         setSpecialButtons(getDefaultSpecialButtons(this));
 
+        // The bar this view sits on is always translucent black, so taking these from the
+        // activity theme would make the labels vanish whenever the app runs in a light theme.
         setButtonColors(
-            getSystemAttrColor(context, ATTR_BUTTON_TEXT_COLOR, DEFAULT_BUTTON_TEXT_COLOR),
+            DEFAULT_BUTTON_TEXT_COLOR,
             getSystemAttrColor(context, ATTR_BUTTON_ACTIVE_TEXT_COLOR, DEFAULT_BUTTON_ACTIVE_TEXT_COLOR),
-            getSystemAttrColor(context, ATTR_BUTTON_BACKGROUND_COLOR, DEFAULT_BUTTON_BACKGROUND_COLOR),
+            DEFAULT_BUTTON_BACKGROUND_COLOR,
             getSystemAttrColor(context, ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR, DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR));
 
         setLongPressTimeout(ViewConfiguration.getLongPressTimeout());

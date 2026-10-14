@@ -6,4 +6,6 @@ public interface KeyInputHandler {
     boolean onKeyDownEvent(int keyCode, KeyEvent event);
 
     boolean onKeyUpEvent(int keyCode, KeyEvent event);
+
+    void sendTextViaClipboard(String text);
 }
