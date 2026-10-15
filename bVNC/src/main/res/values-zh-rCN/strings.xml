@@ -455,7 +455,10 @@ bVNC对应的功能如下：
     <string name="paste_non_latin_via_clipboard">远端打不出的字符改用粘贴</string>
     <string name="paste_non_latin_via_clipboard_summary">把拉丁文以外的字符（例如中文）写入远端剪贴板并自动粘贴，会覆盖远端剪贴板内容。</string>
     <string name="show_floating_scroll_keys">悬浮上下键</string>
-    <string name="show_floating_scroll_keys_summary">两个半透明圆形按键，按下即向远端发送上/下方向键。可以拖到屏幕任意位置；只有拖到紧贴左右边缘时才会收起成侧边条，点一下或拖出来即可恢复。</string>
+    <string name="show_floating_scroll_keys_summary">半透明的圆形按键，按下即向远端发送上/下方向键。可以拖到屏幕任意位置；旋转按钮和显示/隐藏按钮位于控制栏中。</string>
+    <string name="hide_floating_scroll_keys">隐藏悬浮上下键</string>
+    <string name="mouse_right_click">鼠标右键</string>
+    <string name="rotate_screen">旋转屏幕</string>
     <string name="position_toolbar_last_used">工具栏位置初始化</string>
     <string name="applies_to_new_connections_only">仅限适用到新建连接</string>
     <string name="pro_feature_mfa">看来您的服务器已启用多因素身份验证。请购买支持此功能的Pro版本。在开始对话框中有Pro版本的链接。</string>

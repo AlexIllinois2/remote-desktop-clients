@@ -30,6 +30,30 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/actionRotateScreen"
+        android:icon="@drawable/ic_screen_rotate_48dp"
+        android:onClick="rotateScreen"
+        android:padding="0dp"
+        android:title="@string/rotate_screen"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/actionFloatingScrollKeys"
+        android:icon="@drawable/ic_floating_scroll_keys_48dp"
+        android:onClick="toggleFloatingScrollKeys"
+        android:padding="0dp"
+        android:title="@string/show_floating_scroll_keys"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/actionMouseRightClick"
+        android:icon="@drawable/ic_mouse_right_click_48dp"
+        android:onClick="mouseRightClick"
+        android:padding="0dp"
+        android:title="@string/mouse_right_click"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/itemExtraKeys"
         android:icon="@drawable/extra_keys"
         android:title="@string/extra_keys_disable"

@@ -38,13 +38,4 @@
 
     </LinearLayout>
 
-    <!-- Replaces the circles once the pair is parked against a side edge. -->
-    <View
-        android:id="@+id/scrollKeyBar"
-        android:layout_width="18dp"
-        android:layout_height="96dp"
-        android:layout_gravity="end|center_vertical"
-        android:background="@drawable/floating_key_bar"
-        android:visibility="gone" />
-
 </FrameLayout>

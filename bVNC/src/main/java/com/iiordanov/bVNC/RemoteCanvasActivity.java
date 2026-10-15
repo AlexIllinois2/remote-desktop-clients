@@ -100,6 +100,7 @@ import com.iiordanov.util.SamsungDexUtils;
 import com.undatech.opaque.Connection;
 import com.undatech.opaque.RemoteClientLibConstants;
 import com.undatech.opaque.dialogs.SelectTextElementFragment;
+import com.undatech.opaque.input.RemotePointer;
 import com.undatech.opaque.util.GeneralUtils;
 import com.undatech.opaque.util.OnTouchViewMover;
 import com.undatech.opaque.util.RemoteToolbar;
@@ -611,6 +612,59 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         relayoutViews(rootView);
     }
 
+    /**
+     * Rotates the canvas. The rotate button now lives in the toolbar instead of the
+     * floating Up/Down keys panel.
+     */
+    public void rotateScreen(MenuItem menuItem) {
+        toggleOrientation();
+    }
+
+    /**
+     * Shows or hides the floating Up/Down keys. This replaces the old side-edge hide
+     * strip of the panel: the toolbar button now stows and restores it.
+     */
+    public void toggleFloatingScrollKeys(MenuItem menuItem) {
+        FrameLayout scrollKeys = findViewById(R.id.floatingScrollKeys);
+        if (scrollKeys == null)
+            return;
+        boolean show = scrollKeys.getVisibility() != View.VISIBLE;
+        scrollKeys.setVisibility(show ? View.VISIBLE : View.GONE);
+        Utils.setSharedPreferenceBoolean(this, Constants.showFloatingScrollKeysTag, show);
+        if (show && floatingScrollKeys == null && remoteConnection != null)
+            floatingScrollKeys = new FloatingScrollKeys(scrollKeys, remoteConnection, handler);
+        updateFloatingScrollKeysMenuItem(menuItem);
+        invalidateOptionsMenu();
+    }
+
+    /** Sends a mouse right-click at the current pointer position. */
+    public void mouseRightClick(MenuItem menuItem) {
+        if (remoteConnection == null)
+            return;
+        RemotePointer pointer = remoteConnection.getPointer();
+        if (pointer == null)
+            return;
+        pointer.rightButtonDown(pointer.getX(), pointer.getY(), 0);
+        pointer.moveMouseButtonUp();
+    }
+
+    /**
+     * Keeps the floating Up/Down keys toolbar button in sync with the panel: its icon and
+     * title reflect whether the panel is currently shown.
+     */
+    private void updateFloatingScrollKeysMenuItem(MenuItem m) {
+        if (m == null)
+            return;
+        FrameLayout scrollKeys = findViewById(R.id.floatingScrollKeys);
+        boolean panelVisible = scrollKeys != null && scrollKeys.getVisibility() == View.VISIBLE;
+        m.setTitle(panelVisible ? R.string.hide_floating_scroll_keys : R.string.show_floating_scroll_keys);
+        Drawable replacer = ResourcesCompat.getDrawable(getResources(),
+                panelVisible ? R.drawable.ic_floating_scroll_keys_48dp
+                        : R.drawable.ic_floating_scroll_keys_off_48dp,
+                null);
+        m.setIcon(replacer);
+    }
+
     private void setKeyStowDrawableAndVisibility(MenuItem m) {
         if (m == null) {
             return;
@@ -666,6 +720,18 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         scrollKeys.setVisibility(enabled ? View.VISIBLE : View.GONE);
         if (enabled)
             floatingScrollKeys = new FloatingScrollKeys(scrollKeys, remoteConnection, handler);
+        // Refresh the toolbar button's icon and title to match the panel's state.
+        invalidateOptionsMenu();
+    }
+
+    /** Rotates the canvas and records the result in the global setting that forces landscape. */
+    private void toggleOrientation() {
+        boolean toLandscape = getResources().getConfiguration().orientation
+                != Configuration.ORIENTATION_LANDSCAPE;
+        Utils.setSharedPreferenceBoolean(this, Constants.forceLandscapeTag, toLandscape);
+        setRequestedOrientation(toLandscape
+                ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void initializeExtraKeysView() {
@@ -959,6 +1025,7 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Make sure extra keys stow item is gone if extra keys are disabled and vice versa.
         setKeyStowDrawableAndVisibility(menu.findItem(R.id.extraKeysToggle));
+        updateFloatingScrollKeysMenuItem(menu.findItem(R.id.actionFloatingScrollKeys));
         menu.findItem(R.id.itemColorMode).setVisible(remoteConnection.canUpdateColorModelConnected());
         return true;
     }

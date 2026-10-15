@@ -3,7 +3,6 @@ package com.iiordanov.bVNC.input;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,32 +14,22 @@ import com.undatech.opaque.input.RemoteKeyboard;
 import com.undatech.remoteClientUi.R;
 
 /**
- * Two semi-transparent round keys that press DPAD_UP / DPAD_DOWN on the remote. The pair can be
- * dropped anywhere on the canvas; only parking it flush against a side edge collapses it into a
- * rounded bar, which a tap or a drag pulls back out.
+ * Semi-transparent round keys that press DPAD_UP / DPAD_DOWN on the remote.
+ * The group can be dragged anywhere on the canvas. Showing and hiding it is done from
+ * the toolbar, which also carries the rotate button, so there is no side-edge hide strip.
  */
 public class FloatingScrollKeys {
     private final static int REPEAT_START_DELAY = 400;
     private final static int REPEAT_INTERVAL = 120;
-    private final static int ANIMATION_DURATION = 150;
-    // How close to the side a drop has to be to count as deliberately parking it there.
-    private final static int DOCK_THRESHOLD_DP = 10;
-    private final static int BAR_STRIP_DP = 18;
     // Initial spot: near the right side but clearly away from the edge.
     private final static int SIDE_MARGIN_DP = 20;
 
     private final FrameLayout container;
-    private final View circles;
-    private final View bar;
     private final InputCarriable remoteInput;
     private final Handler handler;
     private final int touchSlop;
-    private final float dockThreshold;
-    private final float stripWidth;
     private final float sideMargin;
 
-    private boolean docked;
-    private boolean dockedLeft;
     private boolean placedInitially;
     private float freeX, freeY;
 
@@ -48,35 +37,44 @@ public class FloatingScrollKeys {
         this.container = container;
         this.remoteInput = remoteInput;
         this.handler = handler;
-        this.circles = container.findViewById(R.id.scrollKeyCircles);
-        this.bar = container.findViewById(R.id.scrollKeyBar);
         this.touchSlop = ViewConfiguration.get(container.getContext()).getScaledTouchSlop();
-        float density = container.getResources().getDisplayMetrics().density;
-        this.dockThreshold = DOCK_THRESHOLD_DP * density;
-        this.stripWidth = BAR_STRIP_DP * density;
-        this.sideMargin = SIDE_MARGIN_DP * density;
+        this.sideMargin = SIDE_MARGIN_DP * container.getResources().getDisplayMetrics().density;
 
-        bindTarget(container.findViewById(R.id.scrollKeyUp), KeyEvent.KEYCODE_DPAD_UP);
-        bindTarget(container.findViewById(R.id.scrollKeyDown), KeyEvent.KEYCODE_DPAD_DOWN);
-        // Touches on the gaps, and on the docked bar, still drag the pair.
-        bindTarget(container, -1);
+        bindTarget(container.findViewById(R.id.scrollKeyUp), () -> pressKey(KeyEvent.KEYCODE_DPAD_UP), true);
+        bindTarget(container.findViewById(R.id.scrollKeyDown), () -> pressKey(KeyEvent.KEYCODE_DPAD_DOWN), true);
+        // Touches on the gaps still drag the group.
+        bindTarget(container, null, false);
 
         container.post(this::placeInitially);
 
         View parent = (View) container.getParent();
-        final int[] lastWidth = {parent.getWidth()};
+        final int[] lastSize = {parent.getWidth(), parent.getHeight()};
         parent.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             placeInitially();
-            if (right - left == lastWidth[0])
+            int width = right - left;
+            int height = bottom - top;
+            if (width == lastSize[0] && height == lastSize[1])
                 return;
-            lastWidth[0] = right - left;
+            // A rotation changes both dimensions, so keep the group at the same point of the
+            // area it can travel over instead of clamping an absolute position into the new one.
+            if (lastSize[0] > 0 && lastSize[1] > 0 && container.getWidth() > 0) {
+                freeX = travelRatio(freeX, lastSize[0], container.getWidth()) * (width - container.getWidth());
+                freeY = travelRatio(freeY, lastSize[1], container.getHeight()) * (height - container.getHeight());
+            }
+            lastSize[0] = width;
+            lastSize[1] = height;
             clampIntoView();
-            animateTo(docked ? dockedX() : freeX, freeY);
+            animateTo(freeX, freeY);
         });
     }
 
+    private static float travelRatio(float position, int parentSize, int containerSize) {
+        float travel = parentSize - containerSize;
+        return travel <= 0 ? 0 : position / travel;
+    }
+
     /**
-     * Positions the pair near the right side, vertically centred. Called both from a posted
+     * Positions the group near the right side, vertically centred. Called both from a posted
      * message and the first layout callback, since the parent has no size yet at setup time.
      */
     private void placeInitially() {
@@ -91,7 +89,7 @@ public class FloatingScrollKeys {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void bindTarget(View target, int keyCode) {
+    private void bindTarget(View target, Runnable press, boolean repeatable) {
         target.setOnTouchListener(new View.OnTouchListener() {
             private float downRawX, downRawY, lastRawX, lastRawY;
             private boolean dragging, repeated;
@@ -100,7 +98,7 @@ public class FloatingScrollKeys {
                 @Override
                 public void run() {
                     repeated = true;
-                    pressKey(keyCode);
+                    press.run();
                     handler.postDelayed(this, REPEAT_INTERVAL);
                 }
             };
@@ -113,7 +111,7 @@ public class FloatingScrollKeys {
                         downRawY = lastRawY = event.getRawY();
                         dragging = false;
                         repeated = false;
-                        if (!docked && keyCode >= 0)
+                        if (repeatable)
                             handler.postDelayed(repeatTask, REPEAT_START_DELAY);
                         return true;
 
@@ -125,8 +123,6 @@ public class FloatingScrollKeys {
                         if (!dragging && traveledMoreThanSlop()) {
                             dragging = true;
                             handler.removeCallbacks(repeatTask);
-                            if (docked)
-                                expandInPlace();
                         }
                         if (dragging)
                             moveTo(container.getX() + dx, container.getY() + dy);
@@ -137,10 +133,8 @@ public class FloatingScrollKeys {
                         handler.removeCallbacks(repeatTask);
                         if (dragging) {
                             finishDrag();
-                        } else if (docked) {
-                            restore();
-                        } else if (keyCode >= 0 && !repeated) {
-                            pressKey(keyCode);
+                        } else if (press != null && !repeated) {
+                            press.run();
                         }
                         return true;
                 }
@@ -164,56 +158,10 @@ public class FloatingScrollKeys {
                 new KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0, 0), 0);
     }
 
-    /** A drop away from the sides leaves the pair where it was put; a flush drop parks it. */
+    /** A drop simply leaves the group where it was put. */
     private void finishDrag() {
-        float leftGap = container.getX();
-        float rightGap = parentWidth() - (container.getX() + container.getWidth());
         freeX = container.getX();
         freeY = container.getY();
-        if (leftGap <= dockThreshold) {
-            dock(true);
-        } else if (rightGap <= dockThreshold) {
-            dock(false);
-        }
-    }
-
-    private void dock(boolean left) {
-        dockedLeft = left;
-        docked = true;
-        freeX = left ? 0 : parentWidth() - container.getWidth();
-        // Docking right leaves the pair's left edge on screen and vice versa, so the bar has to
-        // sit on whichever side stays visible.
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) bar.getLayoutParams();
-        lp.gravity = (left ? Gravity.END : Gravity.START) | Gravity.CENTER_VERTICAL;
-        bar.setLayoutParams(lp);
-        circles.setVisibility(View.INVISIBLE);
-        bar.setVisibility(View.VISIBLE);
-        animateTo(dockedX(), freeY);
-    }
-
-    /** Slides fully out without moving the pair, so a drag can continue from the finger. */
-    private void expandInPlace() {
-        docked = false;
-        freeX = container.getX();
-        freeY = container.getY();
-        circles.setVisibility(View.VISIBLE);
-        bar.setVisibility(View.GONE);
-        container.setX(dockedLeft ? 0 : parentWidth() - container.getWidth());
-    }
-
-    private void restore() {
-        docked = false;
-        circles.setVisibility(View.VISIBLE);
-        bar.setVisibility(View.GONE);
-        animateTo(freeX, freeY);
-    }
-
-    private float dockedX() {
-        return dockedLeft ? -container.getWidth() + stripWidth : parentWidth() - stripWidth;
-    }
-
-    private float parentWidth() {
-        return ((View) container.getParent()).getWidth();
     }
 
     private void moveTo(float x, float y) {
@@ -233,6 +181,6 @@ public class FloatingScrollKeys {
     }
 
     private void animateTo(float x, float y) {
-        container.animate().x(x).y(y).setDuration(ANIMATION_DURATION).start();
+        container.animate().x(x).y(y).setDuration(150).start();
     }
 }
