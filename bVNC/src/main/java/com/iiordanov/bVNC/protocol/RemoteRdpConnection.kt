@@ -52,8 +52,18 @@ class RemoteRdpConnection(
         val rdpPort = getRemoteProtocolPort(connection.port)
         val gatewayPort = getGatewayPort(connection.rdpGatewayPort)
         canvas.waitUntilInflated()
-        val remoteWidth = canvas.getRemoteWidth(canvas.width, canvas.height)
-        val remoteHeight = canvas.getRemoteHeight(canvas.width, canvas.height)
+        // The remote desktop resolution is deliberately NOT derived from the device screen
+        // size. Deriving it from the view reshaped the remote desktop to match the phone,
+        // which broke as soon as the device was rotated (e.g. a portrait-sized remote desktop
+        // displayed as a narrow strip on a landscape screen). Instead the resolution
+        // configured on the connection is used; when it is unset, FreeRDP applies its
+        // built-in default (1024x768). The remote desktop then keeps a stable size and the
+        // user zooms and pans freely.
+        var remoteWidth = connection.rdpWidth
+        var remoteHeight = connection.rdpHeight
+        // Keep the resolution even, as some servers and codecs require it.
+        if (remoteWidth % 2 == 1) remoteWidth--
+        if (remoteHeight % 2 == 1) remoteHeight--
         rdpComm!!.setConnectionParameters(
             address, rdpPort,
             connection.rdpGatewayEnabled, gatewayAddress, gatewayPort,
