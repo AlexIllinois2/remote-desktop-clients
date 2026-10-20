@@ -5,6 +5,19 @@ clients for Android.
 
 Please see the LICENSE file for information on how the source is licensed.
 
+# 本地修改 (Local Modifications)
+
+本 fork 在上游代码基础上做了以下改动:
+
+- **悬浮上下键 (Floating Up/Down Keys)**: 连接画布上可显示半透明圆形的上/下方向键,按住即向远端发送方向键,可拖动到屏幕任意位置;工具栏中有显示/隐藏开关,全局设置中可配置(默认开启)。
+- **工具栏新增按钮**: 旋转屏幕 (Rotate Screen)、鼠标右键 (Mouse Right Click)、悬浮上下键开关。
+- **远端打不出的字符改用粘贴 (Paste Non-Latin via Clipboard)**: 拉丁文以外的字符(如中文)通过写入远端剪贴板并自动 Ctrl+V 粘贴,解决 CJK 字符无法通过键盘布局输入的问题(全局设置,默认开启)。
+- **VNC 剪贴板修复**: 旧版 ClientCutText 剪贴板消息的长度字段改按 UTF-8 字节数计算,修复含非 ASCII 字符时发送错误的问题。
+- **RDP 分辨率修复**: 远端分辨率不再从设备屏幕尺寸推导(此前旋转设备后会显示异常),改为使用连接配置中的分辨率,未设置时由 FreeRDP 使用默认值 1024x768,并取偶以兼容部分服务器和编解码器。
+- **主题设置 (Night Mode)**: 全局设置中可选择跟随系统/浅色/深色。
+- **界面优化**: 圆角样式、深色模式配色、连接列表布局微调,并补充了简体中文翻译。
+- **构建**: `bVNC/libs/` 中新增 `com.antlersoft.android.contentxml.jar` 和 `com.antlersoft.android.db.jar`。
+
 # Android App Store Links
 
 bVNC is a VNC client. It's released as a donation version at [bVNC Pro](https://play.google.com/store/apps/details?id=com.iiordanov.bVNC),
